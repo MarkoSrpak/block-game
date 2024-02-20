@@ -1,29 +1,52 @@
+# Specific files
 CC = gcc
 EXESRC = src/main.c
 BINDIR = bin
 SRCDIR = src
 INCDIR = inc
+LIBDIR = lib
 EXE = bin/game.exe
 
+# General files
 SRCS = $(wildcard $(SRCDIR)/**/*.c)
-EXEOBJ = $(patsubst $(SRCDIR)/%.c, $(BINDIR)/%.o, $(EXESRC))
 OBJS = $(patsubst $(SRCDIR)/%.c, $(BINDIR)/%.o, $(SRCS))
-CFLAGS = -I $(INCDIR)
+EXEOBJ = $(patsubst $(SRCDIR)/%.c, $(BINDIR)/%.o, $(EXESRC))
+
+# Flags for compiler and linker
+CFLAGS = -I$(LIBDIR)/glad/include -I$(LIBDIR)/glfw/include -I$(LIBDIR)/glfw/deps -I$(INCDIR) -Wall
+LDFLAGS = $(BINDIR)/glad/src/gl.o $(BINDIR)/glfw/src/libglfw3.a -lm -lgdi32
 
 .PHONY: all clean
 
+# Make without specifications runs all three
 all: dirs libs game
 
+# Make dirs for binaries
 dirs:
 	mkdir -p $(BINDIR)
 
+# Make project dependencies
 libs:
+# Compile glad
+	mkdir -p $(BINDIR)/glad/src
+	$(CC) -o $(BINDIR)/glad/src/gl.o -I$(LIBDIR)/glad/include -c $(LIBDIR)/glad/src/gl.c
+# Generate build files for GLFW
+	cmake -S $(LIBDIR)/glfw -B $(BINDIR)/glfw -G "MinGW Makefiles"
+# Compile GLFW
+	make -C $(BINDIR)/glfw -s
 
-$(BINDIR)/%.o : $(SRCDIR)/%.c
-	$(CC) -c $(CFLAGS) $< -o $@
+# Make object files from source files
+$(BINDIR)/%.o: $(SRCDIR)/%.c
+	$(CC) -o $@ -c $< $(CFLAGS)
 
-game: $(EXEOBJ) $(OBJS)
-	gcc $(OBJS) $< -o $(EXE) -lm
-	
+# Make executable
+game: $(OBJS) $(EXEOBJ) 
+	$(CC) -o $(EXE) $^ $(LDFLAGS)
+
+# Run executable
+run:
+	./$(EXE)
+
+# Clean project binaries
 clean:
 	rm -rf $(BINDIR)
