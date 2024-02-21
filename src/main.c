@@ -1,10 +1,24 @@
-#include <glad/gl.h>
-#define GLFW_INCLUDE_NONE
+/**
+ * @file main.c
+ * @brief Main.
+ *
+ * @author Marko Srpak
+ * @copyright See LICENSE.
+ */
+
+/*--------------------------- INCLUDES ---------------------------------------*/
+#include "gfx/gfx.h"
+#include "gfx/window.h"
 #include "linmath.h"
-#include <GLFW/glfw3.h>
 
 #include <stdio.h>
 #include <stdlib.h>
+/*--------------------------- MACROS AND DEFINES -----------------------------*/
+/*--------------------------- TYPEDEFS AND STRUCTS ---------------------------*/
+/*--------------------------- STATIC FUNCTION PROTOTYPES ---------------------*/
+/*--------------------------- VARIABLES --------------------------------------*/
+/*--------------------------- STATIC FUNCTIONS -------------------------------*/
+/*--------------------------- GLOBAL FUNCTIONS -------------------------------*/
 
 static const struct {
     float x, y;
@@ -33,64 +47,20 @@ static const char *fragment_shader_text =
     "    gl_FragColor = vec4(color, 1.0);\n"
     "}\n";
 
-void error_callback(int error, const char *description)
-{
-    fprintf(stderr, "Error: %s\n", description);
-}
-
-void window_close_callback(GLFWwindow *window)
-{
-    glfwDestroyWindow(window);
-}
-
-static void key_callback(GLFWwindow *window, int key, int scancode, int action,
-                         int mods)
-{
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, GLFW_TRUE);
-}
+float vertices[] = {-0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, 0.0f, 0.5f, 0.0f};
 
 int main(int argc, char *argv[])
 {
-    // Register error callbacks
-    glfwSetErrorCallback(error_callback);
+    gfx_init();
+    window_init();
 
-    // Initialize glfw
-    if (!glfwInit()) {
-        printf("Initialization failed\n");
-        return 0;
+    while (1) {
+        glfwSwapBuffers(window);
+        glfwPollEvents();
     }
-
-    // Create glfw window
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    GLFWwindow *window = glfwCreateWindow(640, 480, "My Title", NULL, NULL);
-    if (!window) {
-        printf("Window or OpenGL context creation failed\n");
-        return 0;
-    }
-
-    // Make window current context (and glad)
-    glfwMakeContextCurrent(window);
-    gladLoadGL(glfwGetProcAddress);
-
-    // Set callback for window closing
-    glfwSetWindowCloseCallback(window, window_close_callback);
-
-    // Set callback for key presses
-    glfwSetKeyCallback(window, key_callback);
-
-    // Get width and height of the frame
-    int width, height;
-    glfwGetFramebufferSize(window, &width, &height);
-    glViewport(0, 0, width, height);
-
+    return 0;
     // Get current time
     double time = glfwGetTime();
-
-    // Set buffer swapping
-    glfwSwapBuffers(window);
-    glfwSwapInterval(1);
 
     // -------------------------------
     GLuint vertex_buffer, vertex_shader, fragment_shader, program;
