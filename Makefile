@@ -24,7 +24,6 @@ all: dirs libs game
 dirs:
 	mkdir -p $(BINDIR)
 	mkdir -p $(BINDIR)/gfx
-	mkdir -p $(BINDIR)/window
 
 # Make project dependencies
 libs:
