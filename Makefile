@@ -3,7 +3,6 @@ CC = gcc
 EXESRC = src/main.c
 BINDIR = bin
 SRCDIR = src
-INCDIR = inc
 LIBDIR = lib
 EXE = bin/game.exe
 
@@ -13,7 +12,7 @@ OBJS = $(patsubst $(SRCDIR)/%.c, $(BINDIR)/%.o, $(SRCS))
 EXEOBJ = $(patsubst $(SRCDIR)/%.c, $(BINDIR)/%.o, $(EXESRC))
 
 # Flags for compiler and linker
-CFLAGS = -I$(LIBDIR)/glad/include -I$(LIBDIR)/glfw/include -I$(LIBDIR)/glfw/deps -I$(INCDIR) -Wall
+CFLAGS = -I$(LIBDIR)/glad/include -I$(LIBDIR)/glfw/include -I$(LIBDIR)/glfw/deps -I$(SRCDIR) -Wall
 LDFLAGS = $(BINDIR)/glad/src/gl.o $(BINDIR)/glfw/src/libglfw3.a -lm -lgdi32
 
 .PHONY: all clean
@@ -24,6 +23,8 @@ all: dirs libs game
 # Make dirs for binaries
 dirs:
 	mkdir -p $(BINDIR)
+	mkdir -p $(BINDIR)/gfx
+	mkdir -p $(BINDIR)/window
 
 # Make project dependencies
 libs:
